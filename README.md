@@ -1,2 +1,2 @@
 # tda-arrhythmia-detection
-Topological data analysis and using convolutional neural network for arrhytmia detection and classification.
+Topological data analysis in combination with convolutional neural network for arrhytmia detection and classification.
