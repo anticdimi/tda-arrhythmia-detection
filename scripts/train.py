@@ -7,50 +7,50 @@ import argparse
 from sklearn.model_selection import train_test_split
 
 from keras.utils import to_categorical
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
+from keras.models import Sequential, Model
+from keras.layers import Dense, Dropout, Activation, BatchNormalization
 from keras.layers import Conv1D, GlobalMaxPooling1D, Flatten, MaxPooling1D, PReLU
 from keras.initializers import Constant
+from keras.engine.input_layer import Input
 
 
-# %%
+def conv1d_prelu(filters, kernel_size, alpha=0., bn=False, dropout=0.):
+    def layer(x):
+        x = Conv1D(filters=filters, kernel_size=kernel_size, padding='same')(x)
+        x = MaxPooling1D(pool_size=2)(x)
+        x = PReLU(alpha_initializer=Constant(value=alpha))(x)
+        if bn:
+            x = BatchNormalization()(x)
+        if dropout:
+            x = Dropout(rate=dropout)(x)
+        return x
+    return layer
+
+def build_model(input_shape, kernel_sizes, filters, dropout_rate):
+    input = x = Input(shape=input_shape)
+
+    for kernel, filt in list(zip(kernel_sizes, filters)):
+        x = conv1d_prelu(filt, kernel, 0.25, True, dropout_rate)(x)
+    
+    x = Flatten()(x)
+    x = Dense(30)(x)
+    x = PReLU(alpha_initializer=Constant(value=0.25))(x)
+    z = Dense(2, activation='softmax')(x)
+
+    return Model(input, z, name='conv1d')
+
 def evaluate_model(train_x, train_y, test_x, test_y, dropout, epochs, batch_size, model_save):
-    model = Sequential()
-
-    model.add(Conv1D(filters=64, kernel_size=5, input_shape=(train_x.shape[1], 1), padding='same'))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(PReLU(alpha_initializer=Constant(value=0.25)))
-    model.add(Dropout(dropout))
-
-    model.add(Conv1D(filters=128, kernel_size=5, padding='same'))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(PReLU(alpha_initializer=Constant(value=0.25)))
-    model.add(Dropout(dropout))
-
-    model.add(Conv1D(filters=128, kernel_size=5, padding='same'))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(PReLU(alpha_initializer=Constant(value=0.25)))
-    model.add(Dropout(dropout))
-
-    model.add(Conv1D(filters=128, kernel_size=3, padding='same'))
-    model.add(MaxPooling1D(pool_size=2))
-    model.add(PReLU(alpha_initializer=Constant(value=0.25)))
-    model.add(Dropout(dropout))
-
-    model.add(Flatten())
-    model.add(Dense(30))
-    model.add(PReLU(alpha_initializer=Constant(value=0.25)))
-    model.add(Dense(2, activation='softmax'))
-
+    model = build_model((train_x.shape[1], 1), [5, 5, 5, 3], [64, 128, 128, 128], dropout)
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # fit network
+
     history = model.fit(train_x, train_y, epochs=epochs, batch_size=batch_size, verbose=1)
     # evaluate model
     loss, accuracy = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
 
     model.save(model_save)
     return history, accuracy, loss
+
 
 # %%
 def visualize_history(history):

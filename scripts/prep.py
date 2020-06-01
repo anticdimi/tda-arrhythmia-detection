@@ -133,10 +133,10 @@ def read_samples(dirpath, limit=None):
     annotations = []
     for i, sample in enumerate(sample_names):
         # TODO remove limited reading of the samples
-        current_annotations = wfdb.rdann(f'{dirpath}/{sample}', 'atr')
+        current_annotations = wfdb.rdann(f'{dirpath}/{sample}', 'atr', sampfrom=0, sampto=10000)
         
         annotations.append(current_annotations)
-        records.append(wfdb.rdrecord(f'{dirpath}/{sample}'))
+        records.append(wfdb.rdrecord(f'{dirpath}/{sample}', sampfrom=0, sampto=10000))
 
         if i == limit-1:
             break
