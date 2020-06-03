@@ -132,11 +132,10 @@ def read_samples(dirpath, limit=None):
     records = []
     annotations = []
     for i, sample in enumerate(sample_names):
-        # TODO remove limited reading of the samples
-        current_annotations = wfdb.rdann(f'{dirpath}/{sample}', 'atr', sampfrom=0, sampto=10000)
+        current_annotations = wfdb.rdann(f'{dirpath}/{sample}', 'atr')
         
         annotations.append(current_annotations)
-        records.append(wfdb.rdrecord(f'{dirpath}/{sample}', sampfrom=0, sampto=10000))
+        records.append(wfdb.rdrecord(f'{dirpath}/{sample}'))
 
         if i == limit-1:
             break
@@ -196,7 +195,6 @@ def preprocess_flow(samples, annotations, betti_curve_length):
 
 # %%
 def main():
-    # TODO remove limited reading of the samples
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', help='Relative path to the data folder')
     parser.add_argument('--save_path', help='Relative path to the data folder where preprocessed data should be saved')
