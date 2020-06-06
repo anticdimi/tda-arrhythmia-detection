@@ -21,7 +21,8 @@
 *.pyo    binary
 
 # Jupyter notebook
-notebooks/*.ipynb  text
+notebooks/*.ipynb  
+*.ipynb linguist-documentation
 
 # Note: .db, .p, and .pkl files are associated
 # with the python modules ``pickle``, ``dbm.*``,
