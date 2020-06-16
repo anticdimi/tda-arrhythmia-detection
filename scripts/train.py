@@ -56,7 +56,7 @@ def evaluate_model(train_x, train_y, test_x, test_y, dropout, epochs, batch_size
 
     Path('./history').mkdir(exist_ok=True)
 
-    confusion_matrix(test_y.argmax(axis=1), y_pred.argmax(axis=1))
+    confusion_matrix(test_y.argmax(axis=1), y_pred.argmax(axis=1), accuracy)
     visualize_history(history)
 
     Path(f'./{model_save}').mkdir(exist_ok=True)

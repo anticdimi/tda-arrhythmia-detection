@@ -2,12 +2,14 @@ from matplotlib import pyplot as plt
 from scikitplot.metrics import plot_confusion_matrix
 
 
-def confusion_matrix(y_true, y_pred):
+def confusion_matrix(y_true, y_pred, accuracy):
     plot_confusion_matrix(y_true, 
                         y_pred,
                         figsize=(12,12),
                         normalize=True,
-                        text_fontsize=14)
+                        text_fontsize=20,
+                        title=f'Accuracy: {accuracy:.2f}',
+                        title_fontsize=20)
     plt.savefig('./history/confusion_matrix.png')
     plt.close()
     
