@@ -6,6 +6,8 @@ import argparse
 
 from sklearn.model_selection import train_test_split
 
+from utils import confusion_matrix, visualize_history
+
 from keras.utils import to_categorical
 from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Activation, BatchNormalization
@@ -48,31 +50,21 @@ def evaluate_model(train_x, train_y, test_x, test_y, dropout, epochs, batch_size
     # evaluate model
     loss, accuracy = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=0)
 
-    model.save(model_save)
-    return history, accuracy, loss
+    
+    y_pred = model.predict(test_x)
 
+    confusion_matrix(test_y.argmax(axis=1), y_pred.argmax(axis=1))
+    visualize_history(history)
 
-# %%
-def visualize_history(history):
-    plt.plot(history.history['accuracy'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train accuracy', 'train loss'], loc='upper left')
-    plt.show()
-    # summarize history for loss
-    plt.plot(history.history['loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
+    model.save(f'{model_save}model_{epochs}.h5')
+    return accuracy, loss
+
 
 # %%
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', help='Relative path to the data folder')
-    parser.add_argument('--model_path', help='Relative path to the model saving location')
+    parser.add_argument('--data_path', help='Relative path to the data directory')
+    parser.add_argument('--model_path', help='Relative path to the model saving directory')
     parser.add_argument('--epochs', type=int, help='Number of epochs')
     parser.add_argument('--test_size', type=float, help='Percentage of data used for test')
     parser.add_argument('--dropout', type=float, help='Dropout percentage')
@@ -87,18 +79,11 @@ def main():
     X = np.expand_dims(X, axis=2)
 
     train_x, test_x, train_y, test_y = train_test_split(X, y, test_size=args.test_size, stratify=y, random_state=42)
-    train_history, test_accuracy, test_loss = evaluate_model(train_x, train_y, test_x, test_y, args.dropout, args.epochs, args.batch_size, args.model_path)
+    test_accuracy, test_loss = evaluate_model(train_x, train_y, test_x, test_y, args.dropout, args.epochs, args.batch_size, args.model_path)
 
-    print(f'Test accuracy: {test_accuracy}')
-
-
+    print(f'Test accuracy: {test_accuracy}\nTest loss: {test_loss}')
 
 
 # %%
 if __name__ == '__main__':
     main()
-
-
-# %%
-
-
