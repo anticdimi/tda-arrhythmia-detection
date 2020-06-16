@@ -7,6 +7,7 @@ import argparse
 from sklearn.model_selection import train_test_split
 
 from utils import confusion_matrix, visualize_history
+from pathlib import Path
 
 from keras.utils import to_categorical
 from keras.models import Sequential, Model
@@ -53,10 +54,13 @@ def evaluate_model(train_x, train_y, test_x, test_y, dropout, epochs, batch_size
     
     y_pred = model.predict(test_x)
 
+    Path('./history').mkdir(exist_ok=True)
+
     confusion_matrix(test_y.argmax(axis=1), y_pred.argmax(axis=1))
     visualize_history(history)
 
-    model.save(f'{model_save}model_{epochs}.h5')
+    Path(f'./{model_save}').mkdir(exist_ok=True)
+    model.save(f'{model_save}/model_{epochs}.h5')
     return accuracy, loss
 
 

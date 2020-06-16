@@ -8,7 +8,7 @@ def confusion_matrix(y_true, y_pred):
                         figsize=(12,12),
                         normalize=True,
                         text_fontsize=14)
-    plt.savefig('confusion_matrix.png')
+    plt.savefig('./history/confusion_matrix.png')
     plt.close()
     
 
@@ -18,7 +18,7 @@ def visualize_history(history):
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train accuracy', 'train loss'], loc='upper left')
-    plt.savefig('accuracy_history.png')
+    plt.savefig('./history/accuracy_history.png')
     plt.close()
     # summarize history for loss
     plt.plot(history.history['loss'])
@@ -26,5 +26,5 @@ def visualize_history(history):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig('loss_history.png')
+    plt.savefig('./history/loss_history.png')
     plt.close()
